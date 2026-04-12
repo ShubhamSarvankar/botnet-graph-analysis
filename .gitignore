@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Data and results (too large for git)
+data/
+results/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# uv
+.python-version
+uv.lock
