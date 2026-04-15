@@ -178,8 +178,7 @@ def leave_one_family_out(
         # Previously this only checked row count, which was always True since
         # families aggregate multiple scenarios into large row counts.
         held_out_scenario_ids = [
-            sid for sid, meta in SCENARIOS.items()
-            if meta["family"] == held_out_family
+            sid for sid, meta in SCENARIOS.items() if meta["family"] == held_out_family
         ]
         all_small = all(sid in SMALL_SCENARIOS for sid in held_out_scenario_ids)
         reliable = not all_small and n_observations >= _RELIABLE_MIN_OBSERVATIONS
@@ -206,7 +205,9 @@ def leave_one_family_out(
         pipeline = build_pipeline()
         pipeline.fit(X_train, y_train)
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", message="X does not have valid feature names")
+            warnings.filterwarnings(
+                "ignore", message="X does not have valid feature names"
+            )
             result = evaluate(pipeline, X_test, y_test)
 
         rows.append(

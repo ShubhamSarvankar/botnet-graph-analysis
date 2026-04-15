@@ -69,7 +69,7 @@ def get_feature_columns() -> list[str]:
         "pagerank",
         "betweenness",
         "flow_count",
-        "flow_count_norm", 
+        "flow_count_norm",
         "delta_degree",
     ]
 
@@ -103,9 +103,7 @@ def add_delta_features(features: pd.DataFrame) -> pd.DataFrame:
     # Group by ip (second level of MultiIndex) and diff within each group
     flat = features.reset_index()
     flat = flat.sort_values(["ip", "time_bin"])
-    flat["delta_degree"] = (
-        flat.groupby("ip")["degree"].diff().fillna(0).astype("int64")
-    )
+    flat["delta_degree"] = flat.groupby("ip")["degree"].diff().fillna(0).astype("int64")
     flat = flat.sort_values(["time_bin", "ip"])
     features = flat.set_index(["time_bin", "ip"])
 

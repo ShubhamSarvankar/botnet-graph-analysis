@@ -14,7 +14,6 @@ from botnet_c2.models.evaluation import (
     pr_auc_label,
 )
 
-
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
 
@@ -33,7 +32,8 @@ def simple_features():
         rows.append(
             {
                 "family": family,
-                "time_bin": pd.Timestamp("2011-08-10") + pd.Timedelta(minutes=5 * (i % 20)),
+                "time_bin": pd.Timestamp("2011-08-10")
+                + pd.Timedelta(minutes=5 * (i % 20)),
                 "degree": 50 + (200 if is_bot else 0) + np.random.randint(0, 10),
                 "in_degree": in_deg,
                 "in_degree_norm": float(in_deg) / window_node_count,
@@ -53,6 +53,7 @@ def simple_features():
 @pytest.fixture
 def feature_cols():
     from botnet_c2.features.engineering import get_feature_columns
+
     return get_feature_columns()
 
 
@@ -78,7 +79,9 @@ def test_threshold_classifier_sets_thresholds(simple_features, feature_cols):
     assert clf.tau_core_ > 0
 
 
-def test_threshold_classifier_thresholds_from_normal_only(simple_features, feature_cols):
+def test_threshold_classifier_thresholds_from_normal_only(
+    simple_features, feature_cols
+):
     """Thresholds must be based on normal-IP values only."""
     X = simple_features[feature_cols]
     y = simple_features["is_bot"].values
@@ -131,6 +134,7 @@ def test_threshold_classifier_bot_scores_higher(simple_features, feature_cols):
 
 def test_threshold_classifier_not_fitted_raises(simple_features, feature_cols):
     from sklearn.exceptions import NotFittedError
+
     X = simple_features[feature_cols]
     clf = ThresholdClassifier()
     with pytest.raises(NotFittedError):
@@ -246,7 +250,15 @@ def test_lofo_one_row_per_family(simple_features, feature_cols):
 
 def test_lofo_required_columns(simple_features, feature_cols):
     result = leave_one_family_out(simple_features, feature_cols)
-    required = {"family", "pr_auc", "roc_auc", "n_bot_ips", "n_observations", "reliable", "label"}
+    required = {
+        "family",
+        "pr_auc",
+        "roc_auc",
+        "n_bot_ips",
+        "n_observations",
+        "reliable",
+        "label",
+    }
     assert required.issubset(set(result.columns))
 
 
@@ -263,6 +275,7 @@ def test_lofo_reliable_flag(simple_features, feature_cols):
 
 def test_lofo_no_leakage_column_raises(simple_features, feature_cols):
     from botnet_c2.exceptions import ModelError
+
     df_with_leakage = simple_features.copy()
     df_with_leakage["window_bot_fraction"] = 0.1
     with pytest.raises(ModelError):

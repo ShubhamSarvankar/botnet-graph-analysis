@@ -13,7 +13,6 @@ from botnet_c2.features.engineering import (
 )
 from botnet_c2.features.windows import build_window_features
 
-
 # ── get_feature_columns ───────────────────────────────────────────────────────
 
 
@@ -26,8 +25,15 @@ def test_get_feature_columns_returns_list():
 def test_get_feature_columns_contains_required():
     cols = get_feature_columns()
     required = {
-        "degree", "in_degree", "in_degree_norm", "out_degree", "kcore",
-        "pagerank", "betweenness", "flow_count", "flow_count_norm",
+        "degree",
+        "in_degree",
+        "in_degree_norm",
+        "out_degree",
+        "kcore",
+        "pagerank",
+        "betweenness",
+        "flow_count",
+        "flow_count_norm",
         "delta_degree",
     }
     assert required == set(cols)
@@ -36,7 +42,9 @@ def test_get_feature_columns_contains_required():
 def test_get_feature_columns_no_leakage():
     cols = get_feature_columns()
     for leak_col in LEAKAGE_COLUMNS:
-        assert leak_col not in cols, f"Leakage column '{leak_col}' found in feature columns"
+        assert leak_col not in cols, (
+            f"Leakage column '{leak_col}' found in feature columns"
+        )
 
 
 def test_get_feature_columns_no_is_bot():
@@ -72,8 +80,12 @@ def test_add_delta_features_first_appearance_is_zero(mini_flow_df):
     flat = result.reset_index()
     first_appearances = flat.groupby("ip")["time_bin"].min()
     for ip, first_bin in first_appearances.items():
-        delta = flat[(flat["ip"] == ip) & (flat["time_bin"] == first_bin)]["delta_degree"].iloc[0]
-        assert delta == 0, f"IP {ip} first appearance has delta_degree={delta}, expected 0"
+        delta = flat[(flat["ip"] == ip) & (flat["time_bin"] == first_bin)][
+            "delta_degree"
+        ].iloc[0]
+        assert delta == 0, (
+            f"IP {ip} first appearance has delta_degree={delta}, expected 0"
+        )
 
 
 def test_add_delta_features_no_new_nan(mini_flow_df):
@@ -91,6 +103,7 @@ def test_add_delta_features_preserves_other_columns(mini_flow_df):
 
 def test_add_delta_features_empty_df():
     from botnet_c2.features.windows import _empty_feature_df
+
     empty = _empty_feature_df()
     result = add_delta_features(empty)
     assert "delta_degree" in result.columns
