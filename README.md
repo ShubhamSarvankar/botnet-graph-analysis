@@ -8,7 +8,7 @@ This project builds a rigorous, reproducible pipeline to test that question agai
 
 ## Results
 
-The short answer: **topology signal is real but conditional**. Whether it crosses the threshold for reliable detection depends critically on what "positive" means.
+The project finds that **topology signal is real but conditional**. Whether it crosses the threshold for reliable detection depends critically on what "positive" means.
 
 We tested four labeling strategies — four different definitions of what a C2-adjacent node is:
 
