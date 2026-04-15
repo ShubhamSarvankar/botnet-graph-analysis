@@ -21,6 +21,7 @@ The returned DataFrame has:
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -28,6 +29,16 @@ import pandas as pd
 from botnet_c2.exceptions import SchemaError
 
 logger = logging.getLogger(__name__)
+
+# Matches valid IPv4 addresses only. Excludes:
+#   - 0.0.0.0 (placeholder/unspecified address)
+#   - MAC addresses (e.g. 00:15:17:2c:e5:2d)
+#   - Hostnames or any other non-IP string
+# This prevents MAC addresses and placeholders from appearing as graph
+# nodes and corrupting degree, k-core, and label attachment.
+_IPV4_PATTERN = re.compile(
+    r"^(?!0\.0\.0\.0$)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$"
+)
 
 # Columns that must be present for any downstream processing to work.
 REQUIRED_COLUMNS: list[str] = ["SrcAddr", "DstAddr", "TotBytes", "Label", "StartTime"]
@@ -99,6 +110,22 @@ def _coerce_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 
     # TotBytes: coerce to float, replacing unparseable values with NaN
     df["TotBytes"] = pd.to_numeric(df["TotBytes"], errors="coerce").astype("float64")
+
+    # Filter out non-IPv4 addresses from SrcAddr and DstAddr.
+    # CTU-13 binetflow files contain MAC addresses (e.g. 00:15:17:2c:e5:2d)
+    # and placeholder addresses (0.0.0.0) that should not appear as graph
+    # nodes. Rows with invalid addresses in either column are dropped.
+    n_before = len(df)
+    valid_src = df["SrcAddr"].str.match(_IPV4_PATTERN, na=False)
+    valid_dst = df["DstAddr"].str.match(_IPV4_PATTERN, na=False)
+    df = df[valid_src & valid_dst].copy()
+    n_dropped = n_before - len(df)
+    if n_dropped > 0:
+        logger.info(
+            "Dropped %d rows with non-IPv4 SrcAddr or DstAddr (%.2f%%)",
+            n_dropped,
+            100 * n_dropped / max(n_before, 1),
+        )
 
     return df
 

@@ -14,3 +14,10 @@ results/
 # uv
 .python-version
 uv.lock
+
+# Cache directories
+.ruff_cache/
+.pytest_cache/
+
+# Reference documents (not source code)
+*.pdf

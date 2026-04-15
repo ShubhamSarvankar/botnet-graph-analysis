@@ -91,7 +91,10 @@ def to_simple_undirected(G: nx.DiGraph) -> nx.Graph:
     """Convert a directed graph to a simple undirected graph.
 
     Steps:
-        1. Convert directed → undirected (anti-parallel edges are merged).
+        1. Convert directed → undirected, merging anti-parallel edges by
+           summing their weight and flows attributes. nx.DiGraph.to_undirected()
+           keeps only one direction's attributes silently, so we do this
+           explicitly.
         2. Remove self-loops (a node connected only to itself contributes no
            triangles and inflates degree counts).
 
@@ -103,8 +106,17 @@ def to_simple_undirected(G: nx.DiGraph) -> nx.Graph:
         G: Any nx.DiGraph.
 
     Returns:
-        nx.Graph with no self-loops.
+        nx.Graph with no self-loops. Anti-parallel edge attributes are summed.
     """
-    U = G.to_undirected()
-    U.remove_edges_from(nx.selfloop_edges(U))
+    U = nx.Graph()
+    U.add_nodes_from(G.nodes(data=True))
+    for u, v, data in G.edges(data=True):
+        if u == v:
+            continue  # skip self-loops during construction
+        if U.has_edge(u, v):
+            # Merge by summing numeric attributes
+            U[u][v]["weight"] = U[u][v].get("weight", 0) + data.get("weight", 0)
+            U[u][v]["flows"] = U[u][v].get("flows", 0) + data.get("flows", 0)
+        else:
+            U.add_edge(u, v, **data)
     return U

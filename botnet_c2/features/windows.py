@@ -169,6 +169,8 @@ def _process_window(
                 "betweenness": float(betweenness.get(node, 0.0)),
                 "flow_count": int(flow_count.get(node, 0)),
                 "window_node_count": int(n_nodes),
+                "in_degree_norm": float(in_deg.get(node, 0)) / max(n_nodes, 1),
+                "flow_count_norm": float(flow_count.get(node, 0)) / max(n_nodes, 1),
             }
         )
     return records
