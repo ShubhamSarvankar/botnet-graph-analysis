@@ -159,7 +159,9 @@ def test_evaluate_pr_auc_in_range(simple_features, feature_cols):
     clf = ThresholdClassifier()
     clf.fit(X, y)
     result = evaluate(clf, X, y)
-    assert 0.0 <= result.pr_auc <= 1.0
+    # average_precision_score can return 1.0 + epsilon on perfect classifiers
+    # due to floating point arithmetic — use approx tolerance
+    assert 0.0 <= result.pr_auc <= pytest.approx(1.0, abs=1e-9)
 
 
 def test_evaluate_roc_auc_in_range(simple_features, feature_cols):
