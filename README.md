@@ -1,5 +1,7 @@
 ﻿# Botnet C2 Detection via Graph Topology
 
+[![CI](https://github.com/ShubhamSarvankar/botnet-graph-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/ShubhamSarvankar/botnet-graph-analysis/actions/workflows/ci.yml)
+
 Can graph topology alone — no ports, no payload, no protocol — identify command-and-control nodes in botnet network traffic, and does that signal generalize to botnet families the model has never seen?
 
 This project builds a rigorous, reproducible pipeline to test that question against the [CTU-13 dataset](https://www.stratosphereips.org/datasets-ctu13): 13 captures spanning 7 botnet families, evaluated under leave-one-family-out cross-validation with pre-registered success thresholds.
