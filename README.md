@@ -10,7 +10,7 @@ This project builds a rigorous, reproducible pipeline to test that question agai
 
 The project finds that **topology signal is real but conditional**. Whether it crosses the threshold for reliable detection depends critically on what "positive" means.
 
-We tested four labeling strategies — four different definitions of what a C2-adjacent node is:
+The project tested four labeling strategies — four different definitions of what a C2-adjacent node is:
 
 | Labeling strategy | CV PR-AUC | Held-out PR-AUC | LOFO avg | Best LOFO |
 |---|---|---|---|---|
