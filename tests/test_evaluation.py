@@ -7,7 +7,12 @@ import pandas as pd
 import pytest
 
 from botnet_c2.models.baseline import ThresholdClassifier
-from botnet_c2.models.evaluation import EvalResult, evaluate, leave_one_family_out, pr_auc_label
+from botnet_c2.models.evaluation import (
+    EvalResult,
+    evaluate,
+    leave_one_family_out,
+    pr_auc_label,
+)
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -253,7 +258,7 @@ def test_lofo_reliable_flag(simple_features, feature_cols):
     combined = pd.concat([tiny, rbot], ignore_index=True)
     result = leave_one_family_out(combined, feature_cols)
     neris_row = result[result["family"] == "Neris"].iloc[0]
-    assert neris_row["reliable"] is False or neris_row["reliable"] == False
+    assert neris_row["reliable"] is False or not neris_row["reliable"]
 
 
 def test_lofo_no_leakage_column_raises(simple_features, feature_cols):

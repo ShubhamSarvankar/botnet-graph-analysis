@@ -19,9 +19,8 @@ Public API:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
-
 import warnings
+from dataclasses import dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -149,8 +148,8 @@ def leave_one_family_out(
             n_observations, reliable, label
         One row per family.
     """
-    from botnet_c2.models.trainer import _check_no_leakage, build_pipeline
     from botnet_c2.data.registry import SCENARIOS, SMALL_SCENARIOS
+    from botnet_c2.models.trainer import _check_no_leakage, build_pipeline
 
     _check_no_leakage(all_features)
 
